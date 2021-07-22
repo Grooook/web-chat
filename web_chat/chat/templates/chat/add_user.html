@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="{% url 'chat:add_to_room' room_id %}" method="POST" class="form">
+    {% csrf_token %}
+        <input type="text" name="username" class="form-control form-control-lg" placeholder="Username"/>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    {% if messages %}
+            {% for message in messages %}
+                <p class="alert alert-danger" role="alert">{{message}}</p>
+            {% endfor %}
+    {% endif %}
+{% endblock content %}

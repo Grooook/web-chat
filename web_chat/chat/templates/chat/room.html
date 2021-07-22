@@ -2,42 +2,75 @@
 
 {% block content %}
     <div class="d-flex justify-content-center">
-        <div class="card">
+        <div class="card w-100">
             <div class="card-body">
-                <textarea id="chat-log" class="w-100" rows="20"></textarea><br>
-                <div class="d-flex">
-                    <input id="chat-message-input" type="text" ><br>
+
+                <div class="message-content">
+                    <div id="chat-log">
+                        {% for message in room_messages %}
+                            {% if message.user == request.user %}
+                                <div class='text-end'>
+                                {{message.msg_text}}
+                                <p class='small text-muted'>At {{message.pub_date}}</p>
+                                </div>
+                            {% else %}
+                                <div class='text-start'>
+                                {{message.msg_text}}
+                                <p class='small text-muted'>At {{message.pub_date}}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="d-flex w-100">
+                    <input id="chat-message-input" type="text" class="w-100"><br>
                     <input id="chat-message-submit" type="button" class="btn btn-primary ms-2" value="Send">
+                    <a href="{% url 'chat:add_to_room' room_id %}" class="btn btn-warning">Add</a>
                 </div>
 
-                {% comment %} <form action="{% url 'app:send_msg' room_id %}" method="POST" class="form">
-                {% csrf_token %}
-                    <div class="d-flex m-3">
-                        <input type="text" name="msg_text" class="form-control" placeholder="Type message here"/>
-                        <button type="submit" class="btn btn-primary ms-2">Send</button>
-                    </div>
-                </form> {% endcomment %}
             </div>
         </div>
     </div>
+
     {% comment %} <textarea id="chat-log" cols="100" rows="20"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send"> {% endcomment %}
-    {{ room_name|json_script:"room-name" }}
+    {{ room_id|json_script:"room-id" }}
+    {{ user_name|json_script:"user-name" }}
     <script>
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
-
+        const roomId = JSON.parse(document.getElementById('room-id').textContent);
+        const userName = JSON.parse(document.getElementById('user-name').textContent);
         const chatSocket = new WebSocket(
             'ws://'
             + window.location.host
             + '/ws/chat/'
-            + roomName
+            + roomId
             + '/'
         );
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + ' '  + '\n');
+            add_html(data)
+        };
+
+        function add_html(data){
+            text = ''
+            
+            if (data.username == userName){
+                text =  "<div class='text-end'>"+
+                data.message+
+                "<p class='small text-muted'>"+"At "+ data.time + "</p>"+
+                "</div>"
+                ;
+            }
+            else{
+                text =  "<div class='text-start'>"+
+                data.message+
+                "<p class='small text-muted'>"+"From "+data.username+" at "+ data.time + "</p>"+
+                "</div>"
+                ;
+            } 
+            document.querySelector('#chat-log').innerHTML  += text
         };
 
         chatSocket.onclose = function(e) {
@@ -46,7 +79,7 @@
 
         
         document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
+            if (e.keyCode === 13) {  
                 document.querySelector('#chat-message-submit').click();
             }
         };
@@ -54,9 +87,28 @@
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
+            const  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const currentdate = new Date();
+            var year = currentdate.getFullYear();
+            var month = currentdate.getMonth();
+            var day = currentdate.getDate()
+            var hour = currentdate.getUTCHours() - 12;
+            var minut = currentdate.getMinutes();
+
+            var time = months[month] + " " + day + ", " + year + ', ' + hour + ':' + minut;
+
+            if (currentdate.getHours()<=12){
+                time += " a.m."
+            }
+            else{
+                time += " p.m."
+            }
+
             if (message != ''){
                 chatSocket.send(JSON.stringify({
-                    'message': message
+                    'message': message,
+                    'username' : userName,
+                    'time' : time,
                 }));
             }
             messageInputDom.value = '';
