@@ -1,0 +1,35 @@
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<div class="container m-5">
+    <div class="d-flex justify-content-center">
+        <div class="card" style="border-radius: 15px;">
+            <div class="card-body p-5">
+                <form action="{% url 'account:registration' %}" method="POST" class="form">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="form-outline mb-4">
+                                {{field}}
+                        </div>
+                    {% endfor %}
+
+                   
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p class="alert alert-danger" role="alert">{{error}}</p>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-success" type="submit">Sign Up</button>
+                    </div>
+                </form>
+                <small>Already have an account?</small>
+                <a href="{% url 'account:login' %}" class="m-2">Login</a>
+            </div>
+        </div>
+    </div>
+</div>

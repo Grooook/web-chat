@@ -1,0 +1,20 @@
+<hr />
+<ul class="nav nav-pills flex-column mb-auto">
+  <div class="bd-example d-md-flex">
+    <div
+      class="overflow-auto bg-light"
+      style="max-width: 100vh; min-width: 35vh; max-height: 80vh"
+    >
+      {% for room in rooms %}
+      <li class="nav-item">
+        <a href="{% url 'chat:room' room.id %}" class="nav-link link-dark">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#home"></use>
+          </svg>
+          {{room.name}}
+        </a>
+      </li>
+      {% endfor %}
+    </div>
+  </div>
+</ul>
