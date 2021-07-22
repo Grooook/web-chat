@@ -47,7 +47,7 @@ def create_chat(request):
             room.save()
             Participants(user=user, room=room).save()
 
-            return redirect('/home/')
+            return redirect(f'/chat/{room.id}/')
         else:
             messages.info(request, 'You already have a chat with this name')
 

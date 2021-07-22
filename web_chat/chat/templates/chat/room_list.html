@@ -1,23 +1,21 @@
 <hr />
 <ul class="nav nav-pills flex-column mb-auto">
-  <div class="bd-example d-md-flex">
     <div
-      class="overflow-auto bg-light"
-      style="max-width: 100vh; min-width: 35vh; max-height: 80vh"
+      class="bg-light"
+      
     >
       {% for room in rooms %}
       <li class="nav-item">
         <div class="row w-100">
-            <div class="col">
-              <a href="{% url 'chat:room' room.id %}" class="nav-link link-dark">
-                <svg class="bi me-2" width="16" height="16">
-                  <use xlink:href="#home"></use>
-                </svg>
-                {{room.name}}
-              </a>
+            <div class="col-8">
+              <div class="d-flex justify-content-start">
+                <a href="{% url 'chat:room' room.id %}" class="nav-link link-dark ">
+                  {{room.name}}
+                </a>
+              </div>
             </div>
-            <div class="col">
-              <div class="d-flex justify-content-end h-100">
+            <div class="col-2">
+              <div class="d-flex justify-content-end">
                 <a href="{% url 'chat:delete_chat' room.id %}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="40" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
@@ -30,5 +28,4 @@
       </li>
       {% endfor %}
     </div>
-  </div>
 </ul>
